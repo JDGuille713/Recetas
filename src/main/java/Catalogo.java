@@ -1,4 +1,6 @@
 import java.io.*;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Scanner;
 
 public class Catalogo {
@@ -6,6 +8,7 @@ public class Catalogo {
     private static final String NOMBRE_FICHERO = "recetas.dat";
 
     Scanner sc = new Scanner(System.in);
+    ArrayList<Receta> recetasList = new ArrayList<>();
 
     public void crearCatalogoInicial() {
         Receta[] recetas = {
@@ -14,14 +17,41 @@ public class Catalogo {
                 new Receta("Pisto", 40, new String[]{"pimiento", "tomate", "berenejena", "huevo"}),
         };
 
+        recetasList.addAll(Arrays.asList(recetas));
+        escribirRecetas();
+    }
+
+    public void escribirRecetas() {
         try (ObjectOutputStream escribir = new ObjectOutputStream(new FileOutputStream(RUTA_FICHERO + NOMBRE_FICHERO))) {
-            for (Receta receta : recetas) {
+            for (Receta receta : recetasList) {
                 escribir.writeObject(receta);
             }
         } catch (IOException e) {
-            System.out.println("Error al crear o escribir el fichero.");
+            System.out.println("Error escribir el fichero.");
         }
     }
+
+    public void leerRecetas() {
+        recetasList.clear();
+        try (ObjectInputStream leer = new ObjectInputStream(new FileInputStream(RUTA_FICHERO + NOMBRE_FICHERO))) {
+            while (true) {
+                Receta recetaLeida = (Receta) leer.readObject();
+                recetasList.add(recetaLeida);
+            }
+        } catch (EOFException e) {
+            System.out.print("");
+        } catch (IOException | ClassNotFoundException e) {
+            System.out.println("Error al leer el fichero.");
+            System.out.println(e.getMessage());
+        }
+    }
+
+    public void mostrarRecetas() {
+        for (Receta receta : recetasList) {
+            System.out.println(receta);
+        }
+    }
+
 
     public void anadirReceta() {
         System.out.print("¿Qué plato quieres añadir? ");
@@ -43,19 +73,6 @@ public class Catalogo {
         }
     }
 
-    public void mostrarRecetas() {
-        try (ObjectInputStream leer = new ObjectInputStream(new FileInputStream(RUTA_FICHERO + NOMBRE_FICHERO))) {
-            while (true) {
-                Receta recetaLeida = (Receta) leer.readObject();
-                System.out.println(recetaLeida);
-            }
-        } catch (EOFException e) {
-            System.out.println("Fin del fichero.");
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error al leer el fichero.");
-            System.out.println(e.getMessage());
-        }
-    }
 
     public void buscarReceta() {
         System.out.println("¿Qué receta quieres buscar?");
