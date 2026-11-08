@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<recetas>
+    <receta id="1">
+        <nombre>Pizza</nombre>
+        <minutosPrep>30</minutosPrep>
+        <ingredientes>
+            <ingrediente>masa</ingrediente>
+            <ingrediente>queso</ingrediente>
+            <ingrediente>tomate</ingrediente>
+        </ingredientes>
+    </receta>
+    <receta id="2">
+        <nombre>Paella</nombre>
+        <minutosPrep>60</minutosPrep>
+        <ingredientes>
+            <ingrediente>arroz</ingrediente>
+            <ingrediente>marisco</ingrediente>
+            <ingrediente>pollo</ingrediente>
+        </ingredientes>
+    </receta>
+    <receta id="3">
+        <nombre>Pisto</nombre>
+        <minutosPrep>40</minutosPrep>
+        <ingredientes>
+            <ingrediente>pimiento</ingrediente>
+            <ingrediente>tomate</ingrediente>
+            <ingrediente>berenejena</ingrediente>
+            <ingrediente>huevo</ingrediente>
+        </ingredientes>
+    </receta>
+    <receta id="4">
+        <nombre>macarrones</nombre>
+        <minutosPrep>30</minutosPrep>
+        <ingredientes>
+            <ingrediente>pasta</ingrediente>
+            <ingrediente>tomate</ingrediente>
+            <ingrediente>queso</ingrediente>
+        </ingredientes>
+    </receta>
+</recetas>

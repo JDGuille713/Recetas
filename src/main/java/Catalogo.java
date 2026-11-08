@@ -1,6 +1,5 @@
 import java.io.*;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Scanner;
 
 public class Catalogo {
@@ -10,25 +9,8 @@ public class Catalogo {
     Scanner sc = new Scanner(System.in);
     ArrayList<Receta> recetasList = new ArrayList<>();
 
-    public void crearCatalogoInicial() {
-        Receta[] recetas = {
-                new Receta("Pizza", 20, new String[]{"masa", "queso", "tomate"}),
-                new Receta("Paella", 60, new String[]{"arroz", "marisco", "pollo"}),
-                new Receta("Pisto", 40, new String[]{"pimiento", "tomate", "berenejena", "huevo"}),
-        };
-
-        recetasList.addAll(Arrays.asList(recetas));
-        escribirRecetas();
-    }
-
-    public void escribirRecetas() {
-        try (ObjectOutputStream escribir = new ObjectOutputStream(new FileOutputStream(RUTA_FICHERO + NOMBRE_FICHERO))) {
-            for (Receta receta : recetasList) {
-                escribir.writeObject(receta);
-            }
-        } catch (IOException e) {
-            System.out.println("Error escribir el fichero.");
-        }
+    public ArrayList<Receta> getRecetasList() {
+        return recetasList;
     }
 
     public void leerRecetas() {
@@ -43,6 +25,54 @@ public class Catalogo {
         } catch (IOException | ClassNotFoundException e) {
             System.out.println("Error al leer el fichero.");
             System.out.println(e.getMessage());
+        }
+    }
+
+    private int siguienteID() {
+        int max = 0;
+        for (Receta receta : recetasList) {
+            if (receta.getId() > max) {
+                max = receta.getId();
+            }
+        }
+        return max + 1;
+    }
+
+    private void agregarReceta(Receta receta) {
+        receta.setId(siguienteID());
+        recetasList.add(receta);
+    }
+
+    public void escribirRecetas() {
+        try (ObjectOutputStream escribir = new ObjectOutputStream(new FileOutputStream(RUTA_FICHERO + NOMBRE_FICHERO))) {
+            for (Receta receta : recetasList) {
+                escribir.writeObject(receta);
+            }
+        } catch (IOException e) {
+            System.out.println("Error escribir el fichero.");
+        }
+    }
+
+    public void crearCatalogoInicial() {
+        Receta[] recetas = {
+                new Receta("Pizza", 20, new String[]{"masa", "queso", "tomate"}),
+                new Receta("Paella", 60, new String[]{"arroz", "marisco", "pollo"}),
+                new Receta("Pisto", 40, new String[]{"pimiento", "tomate", "berenejena", "huevo"}),
+        };
+
+        for (Receta receta : recetas) {
+            agregarReceta(receta);
+        }
+        escribirRecetas();
+    }
+
+    public void comprobarFichero() {
+        File fichero = new File(RUTA_FICHERO + NOMBRE_FICHERO);
+
+        if  (fichero.exists()) {
+            leerRecetas();
+        } else {
+            crearCatalogoInicial();
         }
     }
 
@@ -64,57 +94,54 @@ public class Catalogo {
         System.out.print("¿Qué ingredientes lleva? (Separa por espacios) ");
         String[] ingredientes = sc.nextLine().split(" ");
 
-        Receta receta = new Receta(nombre, tiempo, ingredientes);
-
-        try (ObjectOutputStream escribir = new ObjectOutputStream(new FileOutputStream(RUTA_FICHERO + NOMBRE_FICHERO, true))) {
-            escribir.writeObject(receta);
-        } catch (IOException e) {
-            System.out.println("Error al escribir el fichero.");
-        }
+        agregarReceta(new Receta(nombre, tiempo, ingredientes));
+        escribirRecetas();
     }
 
 
     public void buscarReceta() {
         System.out.println("¿Qué receta quieres buscar?");
-        System.out.println("Introduce el ID: ");
+        System.out.print("Introduce el ID: ");
         int id = sc.nextInt();
+        sc.nextLine();
+        boolean encontrado = false;
 
-        try (ObjectInputStream leer = new ObjectInputStream(new FileInputStream(RUTA_FICHERO + NOMBRE_FICHERO))) {
-            while (true) {
-                Receta recetaLeida = (Receta) leer.readObject();
-                if (recetaLeida.getId() == id) {
-                    System.out.println(recetaLeida);
-                }
+        for (Receta receta : recetasList) {
+            if (receta.getId() == id) {
+                System.out.println(receta);
+                encontrado = true;
+                break;
             }
-        } catch (EOFException e) {
-            System.out.println("Fin del fichero.");
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error al leer el fichero.");
+        }
+        if (!encontrado) {
+            System.out.println("No se encontro la receta.");
         }
     }
 
     public void modificarTiempo() {
         mostrarRecetas();
-        Receta receta = new Receta();
+        boolean encontrado = false;
+
         System.out.print("¿Qué receta quieres cambiar? (Introduce el ID): ");
         int id = sc.nextInt();
 
         System.out.print("Introduce el tiempo: ");
         int tiempo = sc.nextInt();
+        sc.nextLine();
 
-        try (ObjectInputStream leer = new ObjectInputStream(new FileInputStream(RUTA_FICHERO + NOMBRE_FICHERO));
-            DataOutputStream escribir = new DataOutputStream(new FileOutputStream(RUTA_FICHERO + NOMBRE_FICHERO))) {
-            while (true) {
-                Receta recetaLeida = (Receta) leer.readObject();
-                if (recetaLeida.getId() == id) {
-                    recetaLeida.setMinutosPrep(tiempo);
-                }
+        for (Receta receta : recetasList) {
+            if (receta.getId() == id) {
+                receta.setMinutosPrep(tiempo);
+                encontrado = true;
+                break;
             }
-        } catch (EOFException e) {
-            System.out.println("Fin del fichero.");
-        } catch (IOException | ClassNotFoundException e) {
-            System.out.println("Error al leer el fichero.");
         }
-    }
 
+        if (encontrado) {
+            escribirRecetas();
+        } else {
+            System.out.println("No se ha encontrado la receta.");
+        }
+
+    }
 }

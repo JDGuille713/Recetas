@@ -2,7 +2,6 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 public class Receta implements Serializable {
-    private static int contador = 0;
     private int id;
     private String nombre;
     private int minutosPrep;
@@ -11,8 +10,6 @@ public class Receta implements Serializable {
     public Receta() {}
 
     public Receta(String nombre, int minutosPrep,  String[] ingredientes) {
-        contador++;
-        this.id = contador;
         this.nombre = nombre;
         this.minutosPrep = minutosPrep;
         this.ingredientes = ingredientes;
@@ -20,6 +17,10 @@ public class Receta implements Serializable {
 
     public int getId() {
         return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public int getMinutosPrep() {
